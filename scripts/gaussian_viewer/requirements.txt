@@ -1,0 +1,7 @@
+viser==0.2.7
+numpy
+scipy
+Pillow
+PyYAML
+moderngl==5.12.0
+glcontext==3.0.0

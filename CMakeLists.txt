@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(neural_mapping LANGUAGES CXX CUDA)
+project(neural_mapping LANGUAGES C CXX CUDA)
 
 # set(CUDA_TOOLKIT_ROOT_DIR /usr/local/cuda-11.8/)
 set(CMAKE_CXX_STANDARD 17)
@@ -162,3 +162,7 @@ target_link_libraries(neural_mapping_node neural_mapping_lib)
 if(ENABLE_BACKWARD AND NOT WIN32 AND DW_LIBRARY)
   target_link_libraries(neural_mapping_node ${DW_LIBRARY})
 endif()
+
+# Optional headless viewer worker. Keep it out of normal training builds.
+add_executable(gs_sdf_viewer_worker EXCLUDE_FROM_ALL src/gs_sdf_viewer_worker.cpp)
+target_link_libraries(gs_sdf_viewer_worker neural_gaussian neural_net data_loader)
