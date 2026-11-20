@@ -278,6 +278,40 @@ cd src/GS-SDF/build && cmake .. && make -j8
 
 </details>
 
+### Local Viser browser for Gaussian and SDF results
+
+The optional browser uses GS-SDF's CUDA rasterizer to render a trained
+`model/gs.ply` interactively. It reads the saved scene configuration and
+COLMAP PINHOLE camera metadata. The trained Gaussian model stays resident in
+one CUDA worker while the browser changes views. If the run has an exported
+SDF mesh at its configured export resolution, the **显示** menu switches
+between Gaussian and the full mesh using the current camera pose and intrinsics.
+Mesh mode uses offscreen EGL. The **网格光照** menu switches between face
+normals and interpolated vertex normals at the same view. Smooth normals are
+computed on first use and cached in memory. The exported PLY stays read-only.
+
+Build the worker with the existing CUDA 11.8 development image and the
+C++11-ABI LibTorch 2.4.1 directory. Install the Python dependencies in a
+virtual environment or point `GS_SDF_VIEWER_PYTHON` at an existing one.
+
+```bash
+bash scripts/build_gs_sdf_viewer.sh /path/to/libtorch
+python3 -m pip install -r scripts/gaussian_viewer/requirements.txt
+GS_SDF_VIEWER_PYTHON=python3 bash scripts/view_gs_sdf.sh \
+  --run-dir /path/to/training/output --libtorch /path/to/libtorch --frame 214
+```
+
+Open `http://127.0.0.1:7010/`. Drag and scroll to navigate, or focus the
+canvas for WASD and Q/E. Enter an image name or stem to jump to a capture.
+Snapshots save the rendered PNG, the active layer and mesh lighting,
+and the OpenCV camera-to-world pose and intrinsics. The session path is
+printed at startup. Use Ctrl+C to stop
+the server and its renderer. Use `--port` for a different local port or
+`--data-dir` when the saved COLMAP metadata has moved. Use `--mesh` to select
+a different GS-SDF mesh export. The default Docker
+image is `gs-sdf-cu013:cu118-jammy` and can be overridden with
+`GS_SDF_CUDA_IMAGE`.
+
 ## 7. Visualization
 
 - Tested on Ubuntu 20.04, cuda 11.8, ROS Noetic
